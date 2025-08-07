@@ -1,0 +1,64 @@
+# Build artifacts
+/build/
+/bin/
+/lib/
+/obj/
+/*.o
+/*.a
+/*.so
+/*.dylib
+/*.dll
+/*.exe
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# Unity specific
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Assets/Plugins/**/Editor.meta
+Assets/Plugins/**/*.meta
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.pidb
+*.suo
+*.booproj
+
+# Xcode
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Android Studio/NDK
+.gradle/
+.idea/
+*.iml
+local.properties
+*.apk
+*.cxx/
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Test results
+/test_output/
+*.gcno
+*.gcda
+
+# OS/system files
+.DS_Store
+Thumbs.db
