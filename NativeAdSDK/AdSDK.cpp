@@ -1,41 +1,20 @@
 #include "AdSDK.h"
-#include <thread>
-#include <mutex>
-#include <queue>
-#include <string>
-#include <cstring>
 
-struct CallbackTask {
-    std::string adUnitId;
-    std::string error;
-    bool success;
-    AdSuccessCallback successCb;
-    AdFailureCallback failureCb;
-};
+AdSDK* AdSDK::instance = nullptr;
 
+AdSDK::AdSDK() {}
 
-class AdSDK {
-    std::mutex g_mutex;
-    std::queue<CallbackTask> g_callbacks;
-    static AdSDK* instance;
-
-    AdSDK() {}
-
-public:
-    ~AdSDK() {
-        instance = nullptr;
+AdSDK* AdSDK::getInstance() {
+    if (!instance) {
+        instance = new AdSDK();
     }
+    return instance;
+}
 
-    static AdSDK* getInstance() {
-        if (!instance) {
-            instance = new AdSDK();
-        }
-        return instance;
-    }
+void AdSDK::Init(const char* appId) {
+}
 
-    void Init(const char* appId) {
-    }
-    void PreloadAd(const std::string& adUnitId, AdSuccessCallback onSuccess, AdFailureCallback onFailure) {
+void AdSDK:: PreloadAd(const std::string& adUnitId, AdSuccessCallback onSuccess, AdFailureCallback onFailure) {
         std::thread([=]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             CallbackTask task;
@@ -44,12 +23,13 @@ public:
             task.failureCb = onFailure;
             task.success = true;
             task.error = "";
-            std::lock_guard<std::mutex> lock(g_mutex);
+            std::lock_guard<std::mutex> lock(_cb_mutex);
             g_callbacks.push(task);
         }).detach();
     }
-    void Update() {
-        std::lock_guard<std::mutex> lock(g_mutex);
+
+void AdSDK:: Update() {
+        std::lock_guard<std::mutex> lock(_cb_mutex);
         while (!g_callbacks.empty()) {
             CallbackTask task = g_callbacks.front();
             g_callbacks.pop();
@@ -60,7 +40,7 @@ public:
             }
         }
     }
-    void GetAdThumbnail(const std::string& adUnitId, AdThumbnailCallback cb) {
+    void AdSDK::GetAdThumbnail(const std::string& adUnitId, AdThumbnailCallback cb) {
         std::thread([=]() {
             int width = 256, height = 256;
             uint8_t* buffer = new uint8_t[width * height * 4];
@@ -73,9 +53,12 @@ public:
                     buffer[i+3] = 255;
                 }
             cb(adUnitId.c_str(), buffer, width, height);
+            std::lock_guard<std::mutex> lock(_ad_mutex);
+            _adThumbnails[adUnitId] = buffer;
         }).detach();
     }
-    void FreeBuffer(const uint8_t* buffer) {
-        delete[] buffer;
+    void AdSDK::Dispose(const char* adUnitId) {
+        std::lock_guard<std::mutex> lock(_ad_mutex);
+        delete[] _adThumbnails[adUnitId];
+        _adThumbnails.erase(adUnitId);
     }
-};

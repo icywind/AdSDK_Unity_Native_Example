@@ -24,7 +24,7 @@ public class AdBridge : MonoBehaviour
         AdThumbnailCallback callback);
 
     [DllImport("AdSDK")]
-    private static extern void AdSDK_FreeBuffer(IntPtr buffer);
+    private static extern void AdSDK_Dispose(string adUnitId);
 
     public delegate void AdSuccessCallback(string adUnitId);
     public delegate void AdFailureCallback(string adUnitId, string error);
@@ -32,10 +32,13 @@ public class AdBridge : MonoBehaviour
 
     private static Texture2D adTexture;
 
+    public string AppId = "12345";
+    public string AdUnitId = "video_ad_001";
+
     void Start()
     {
-        AdSDK_Init();
-        AdSDK_PreloadAd("video_ad_001", OnAdSuccess, OnAdFailure);
+        AdSDK_Init(AppId);
+        AdSDK_PreloadAd(AdUnitId, OnAdSuccess, OnAdFailure);
     }
 
     void Update()
@@ -66,7 +69,7 @@ public class AdBridge : MonoBehaviour
         adTexture.LoadRawTextureData(managedBuffer);
         adTexture.Apply();
 
-        AdSDK_FreeBuffer(data);
+        AdSDK_Dispose(adUnitId);
         GameObject.Find("AdThumbnail").GetComponent<RawImage>().texture = adTexture;
     }
 }
