@@ -40,6 +40,14 @@ public class AdBridge : MonoBehaviour
         AdSDK_Init(AppId);
         AdSDK_PreloadAd(AdUnitId, OnAdSuccess, OnAdFailure);
     }
+    
+    // This public method can be linked to a UI Button's OnClick event in the Unity Editor
+    // to test the thumbnail functionality.
+    public void GetThumbnail()
+    {
+
+        AdSDK_GetAdThumbnail(AdUnitId, OnThumbnailReceived);
+    }
 
     void Update()
     {
@@ -59,17 +67,28 @@ public class AdBridge : MonoBehaviour
     [MonoPInvokeCallback(typeof(AdThumbnailCallback))]
     private static void OnThumbnailReceived(string adUnitId, IntPtr data, int width, int height)
     {
-        if (adTexture == null || adTexture.width != width || adTexture.height != height)
+        Debug.Log($"[Ad] Thumbnail received: {adUnitId} {width}x{height}");
+        Dispatcher.RunOnMainThread(() =>
         {
-            adTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
-        }
+            if (data == IntPtr.Zero)
+            {
+                Debug.LogError("Failed to get thumbnail");
+                return;
+            }
 
-        byte[] managedBuffer = new byte[width * height * 4];
-        Marshal.Copy(data, managedBuffer, 0, managedBuffer.Length);
-        adTexture.LoadRawTextureData(managedBuffer);
-        adTexture.Apply();
+            if (adTexture == null || adTexture.width != width || adTexture.height != height)
+            {
+                adTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            }
 
-        AdSDK_Dispose(adUnitId);
-        GameObject.Find("AdThumbnail").GetComponent<RawImage>().texture = adTexture;
+            byte[] managedBuffer = new byte[width * height * 4];
+            Marshal.Copy(data, managedBuffer, 0, managedBuffer.Length);
+            adTexture.LoadRawTextureData(managedBuffer);
+            adTexture.Apply();
+
+            AdSDK_Dispose(adUnitId);
+            GameObject.Find("AdThumbnail").GetComponent<RawImage>().texture = adTexture;
+        }); 
+
     }
 }
