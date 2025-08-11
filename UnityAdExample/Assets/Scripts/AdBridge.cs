@@ -35,6 +35,10 @@ public class AdBridge : MonoBehaviour
     public string AppId = "12345";
     public string AdUnitId = "video_ad_001";
 
+    void Awake()
+    {
+        Dispatcher.EnsureExists();
+    }
     void Start()
     {
         AdSDK_Init(AppId);

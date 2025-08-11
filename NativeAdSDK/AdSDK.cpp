@@ -16,7 +16,9 @@ void AdSDK::Init(const char* appId) {
 
 void AdSDK:: PreloadAd(const std::string& adUnitId, AdSuccessCallback onSuccess, AdFailureCallback onFailure) {
         std::thread([=]() {
+            // pretend to load ad for some time
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
             CallbackTask task;
             task.adUnitId = adUnitId;
             task.successCb = onSuccess;
