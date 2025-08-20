@@ -1,3 +1,4 @@
+#include <iostream>
 #include "AdSDK.h"
 
 AdSDK* AdSDK::instance = nullptr;
@@ -11,7 +12,8 @@ AdSDK* AdSDK::getInstance() {
     return instance;
 }
 
-void AdSDK::Init(const char* appId) {
+void AdSDK::Init(const std::string& appId) {
+    std::cout << "AdSDK::Init " << appId << std::endl;
 }
 
 void AdSDK:: PreloadAd(const std::string& adUnitId, AdSuccessCallback onSuccess, AdFailureCallback onFailure) {

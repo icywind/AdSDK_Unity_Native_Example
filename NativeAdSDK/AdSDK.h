@@ -53,7 +53,7 @@ private:
 
 public:
     static AdSDK* getInstance();
-    void Init(const char* appId);
+    void Init(const std::string& appId);
     void PreloadAd(const std::string& adUnitId, AdSuccessCallback onSuccess, AdFailureCallback onFailure);
     void Update();
     void GetAdThumbnail(const std::string& adUnitId, AdThumbnailCallback cb);
