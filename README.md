@@ -2,6 +2,15 @@
 
 This project demonstrates how to integrate a C++ native library (AdSDK) with a Unity project. It includes the native C++ source code and a Unity project configured to call functions from the native library.
 
+## SDK Architecture
+```mermaid
+flowchart LR
+    A[C++ RTC SDK] --> B[Native Plugin Layer]
+    B --> C[Objective-C / C++ Bridge]
+    C --> D[Unity C# Wrapper]
+    D --> E[Unity Application Code]
+```
+
 ## Project Structure
 
 -   `NativeAdSDK/`: Contains the source code for the C++ native library.
